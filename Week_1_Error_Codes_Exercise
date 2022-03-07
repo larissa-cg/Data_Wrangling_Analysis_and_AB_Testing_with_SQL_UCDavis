@@ -13,6 +13,7 @@ FROM dsv1069.users
 
 Solution: 
 SELECT 
+id,
 email_address,
 deleted_at
 FROM dsv1069.users
@@ -22,6 +23,13 @@ Exercise 2:
 --Goal: Use the items table to count the number of items for sale in each category
 
 Starter Code: (none)
+
+Solution:
+SELECT 
+COUNT (id) AS item_count
+, category
+FROM dsv1069.items
+GROUP BY category
 
 Exercise 3:
 --Goal: Select all of the columns from the result when you JOIN the users table to the orders
@@ -44,12 +52,12 @@ FROM dsv1069.events
 WHERE event_name = ‘view_item’
 
 Solution:
-SELECT 
-COUNT (event_id) AS events
+SELECT
+COUNT(DISTINCT event_id) AS events
 FROM dsv1069.events
 WHERE event_name = 'view_item'
 
-Note: quotation marks were incorrect
+Note: quotation marks were incorrect in the starter code
 
 Exercise 5:
 --Goal:Compute the number of items in the items table which have been ordered. The query
@@ -62,15 +70,25 @@ FROM dsv1069.orders
 INNER JOIN
 dsv1069.items
 ON orders.item_id = items.id
+
 --Error: This query runs but the number isn’t right. Number is 47402
 
 Solution:
 
+SELECT
+COUNT(DISTINCT item_id) AS item_count
+FROM dsv1069.orders
+INNER JOIN
+dsv1069.items
+ON orders.item_id = items.id
+WHERE paid_at <> NULL
 
+Final count: 2198
 
 Exercise 6:
 --Goal: For each user figure out IF a user has ordered something, and when their first purchase
 was. The query below doesn’t return info for any of the users who haven’t ordered anything.
+
 Starter Code:
 SELECT
 users_id AS user_id,
@@ -82,8 +100,65 @@ ON
 orders.user_id = users.id
 GROUP BY users_id
 
+Solution: 
+SELECT
+id 
+, MIN(paid_at) AS min_paid_at
+FROM dsv1069.users u LEFT OUTER JOIN dsv1069.orders o
+ON o.user_id=u.id
+GROUP BY id
+
 Exercise 7:
 --Goal: Figure out what percent of users have ever viewed the user profile page, but this query
 isn’t right. Check to make sure the number of users adds up, and if not, fix the query.
 Starter Code:
+
+SELECT
+(CASE WHEN first_view IS NULL THEN false
+  ELSE true END) AS viewed_profile_page
+, COUNT (user_id) AS users
+FROM
+  (SELECT
+  users.id AS user_id,
+  MIN(event_time) AS first_view
+FROM
+  dsv1069.users
+LEFT OUTER JOIN
+  dsv1069.events
+ON
+  events.user_id=users.id
+WHERE
+  event_name = 'view_user_profile'
+GROUP BY
+  users.id
+) first_profile_views
+GROUP BY
+ (CASE WHEN first_view IS NULL THEN false
+ ELSE true END)
+
+Solution:
+SELECT
+(CASE WHEN first_view IS NULL THEN false
+  ELSE true END) AS viewed_profile_page
+, COUNT (user_id) AS users
+FROM
+  (SELECT
+  users.id AS user_id,
+  MIN(event_time) AS first_view
+FROM
+  dsv1069.users
+LEFT OUTER JOIN
+  dsv1069.events
+ON
+  events.user_id=users.id
+AND
+  event_name = 'view_user_profile'
+GROUP BY
+  users.id
+) first_profile_views
+GROUP BY
+ (CASE WHEN first_view IS NULL THEN false
+ ELSE true END)
+
+
 
