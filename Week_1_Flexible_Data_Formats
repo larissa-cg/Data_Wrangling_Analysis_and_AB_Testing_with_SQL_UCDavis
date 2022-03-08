@@ -25,12 +25,11 @@ event_id
 , (CASE WHEN parameter_name = 'item_id'
         THEN CAST(parameter_value AS INT)
         ELSE NULL END) AS item_id
-  (CASE WHEN parameter_name = 'referrer'
+, (CASE WHEN parameter_name = 'referrer'
         THEN parameter_value
-        ELSE NULL END) AS referrer
+        ELSE NULL 
+      END) AS referrer
 FROM dsv1069.events
-
-
 
 Exercise 2:
 Goal: Write a query to format the view_item event into a table with the appropriate columns
@@ -38,14 +37,22 @@ Goal: Write a query to format the view_item event into a table with the appropri
 
 Starter Code:
 SELECT
-event_id,
-event_time,
-user_id,
-platform
-(CASE WHEN parameter_name = 'item_id'
-      THEN CAST parameter_value AS INT
+event_id
+, event_time
+, user_id
+, platform
+, (CASE WHEN parameter_name = 'item_id'
+      THEN CAST(parameter_value AS INT)
       ELSE NULL
       END) AS item_id
+, (CASE WHEN parameter_name = 'view_user_profile'
+      THEN CAST(parameter_value AS INT)
+      ELSE NULL
+      END) AS view_user_profile
+, (CASE WHEN parameter_name = 'test_assignment'
+      THEN CAST(parameter_value AS INT)
+      ELSE NULL
+      END) AS test_assignment
 FROM dsv1069.events
 WHERE event_name = 'view_item'
 ORDER BY event_id
