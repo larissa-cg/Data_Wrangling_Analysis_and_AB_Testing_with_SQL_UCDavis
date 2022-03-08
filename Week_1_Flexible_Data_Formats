@@ -38,6 +38,20 @@ Goal: Write a query to format the view_item event into a table with the appropri
 Starter Code:
 SELECT
 event_id
+, event_time,
+, user_id
+, platform
+, (CASE WHEN parameter_name = 'item_id'
+      THEN CAST (parameter_value AS INT)
+      ELSE NULL
+      END) AS item_id
+FROM dsv1069.events
+WHERE event_name = 'view_item'
+ORDER BY event_id
+
+Solution:
+SELECT
+event_id
 , event_time
 , user_id
 , platform
@@ -55,21 +69,7 @@ event_id
       END) AS test_assignment
 FROM dsv1069.events
 WHERE event_name = 'view_item'
-ORDER BY event_id
 
-Solution:
-SELECT
-event_id
-, event_time,
-, user_id
-, platform
-, (CASE WHEN parameter_name = 'item_id'
-      THEN CAST (parameter_value AS INT)
-      ELSE NULL
-      END) AS item_id
-FROM dsv1069.events
-WHERE event_name = 'view_item'
-ORDER BY event_id
 
 Exercise 3:
 Goal: Use the result from the previous exercise, but make sure
